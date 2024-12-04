@@ -8,7 +8,7 @@
 
 /* eslint-env node */
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { configure } = require('quasar/wrappers');
+const {configure} = require('quasar/wrappers');
 const MonacoEditorPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = configure(function (ctx) {
@@ -56,7 +56,8 @@ module.exports = configure(function (ctx) {
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
-      publicPath: process.env.PUBLIC_PATH ?? (process.env.NODE_ENV === 'development' ? '/' : '/typesense-dashboard'),
+      // publicPath: process.env.PUBLIC_PATH ?? (process.env.NODE_ENV === 'development' ? '/' : '/typesense-dashboard'),
+      publicPath: './',
       // transpile: false,
 
       // Add dependencies for transpiling with Babel (Array of string/regex)
@@ -75,10 +76,10 @@ module.exports = configure(function (ctx) {
 
       // https://v2.quasar.dev/quasar-cli/handling-webpack
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
-      chainWebpack (/* chain */) {
-        //
+      chainWebpack(chain) {
+        chain.output.publicPath('./');
       },
-      extendWebpack (cfg, { isClient }) {
+      extendWebpack(cfg, {isClient}) {
         cfg.plugins.push(
           new MonacoEditorPlugin({
             // https://github.com/Microsoft/monaco-editor-webpack-plugin#options
@@ -90,8 +91,10 @@ module.exports = configure(function (ctx) {
           }),
         )
         // fix for devtools in electron based on https://github.com/quasarframework/quasar/issues/13535#issuecomment-1544028712
-        if (!isClient) { return; }
-        cfg.externals = [({ request }, callback) => {
+        if (!isClient) {
+          return;
+        }
+        cfg.externals = [({request}, callback) => {
           if (/\.\/build-node\/(hook|backend)\.js/.test(request)) {
             return callback(null, `commonjs ${request}`);
           }
@@ -145,9 +148,9 @@ module.exports = configure(function (ctx) {
                       // (gets superseded if process.env.PORT is specified at runtime)
 
       maxAge: 1000 * 60 * 60 * 24 * 30,
-        // Tell browser when a file from the server should expire from cache (in ms)
+      // Tell browser when a file from the server should expire from cache (in ms)
 
-      chainWebpackWebserver (/* chain */) {
+      chainWebpackWebserver(/* chain */) {
         //
       },
 
@@ -164,7 +167,7 @@ module.exports = configure(function (ctx) {
 
       // for the custom service worker ONLY (/src-pwa/custom-service-worker.[js|ts])
       // if using workbox in InjectManifest mode
-      chainWebpackCustomSW (/* chain */) {
+      chainWebpackCustomSW(/* chain */) {
         //
       },
 
@@ -240,13 +243,13 @@ module.exports = configure(function (ctx) {
       },
 
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
-      chainWebpack (/* chain */) {
+      chainWebpack(/* chain */) {
         // do something with the Electron main process Webpack cfg
         // extendWebpackMain also available besides this chainWebpackMain
       },
 
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
-      chainWebpackPreload (/* chain */) {
+      chainWebpackPreload(/* chain */) {
         // do something with the Electron main process Webpack cfg
         // extendWebpackPreload also available besides this chainWebpackPreload
       },
